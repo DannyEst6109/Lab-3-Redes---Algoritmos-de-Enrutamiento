@@ -20,7 +20,7 @@ import time
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, RAIZ)
 
-CONVERGENCIA = {"dijkstra": 8}
+CONVERGENCIA = {"dijkstra": 8, "dvr":20}
 
 
 class NodoProceso:

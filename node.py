@@ -25,7 +25,7 @@ from transport.sockets import SocketTransport
 # No hay que tocar nada mas: ni el nodo, ni el transporte, ni el protocolo.
 # from routing.flooding import Flooding
 # from routing.lsr import LinkStateRouting
-# from routing.dvr import DistanceVector
+from routing.dvr import DistanceVector
 
 #: Registro de algoritmos disponibles.
 #:
@@ -36,7 +36,7 @@ ALGORITMOS = {
     "dijkstra": Dijkstra,
     # "flooding": Flooding,
     # "lsr": LinkStateRouting,
-    # "dvr": DistanceVector,
+    "dvr": DistanceVector,
 }
 
 
