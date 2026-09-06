@@ -7,20 +7,29 @@ conoce a sus vecinos y construye su tabla de enrutamiento intercambiando
 paquetes. El medio de transporte es intercambiable: **sockets TCP** para el
 desarrollo local (fase 1) y **XMPP** para la entrega oficial (fase 2).
 
-## Contenido actual
+## Los cuatro algoritmos
 
-Este repositorio contiene, por ahora, el **esqueleto compartido del nodo** y el
-**algoritmo de Dijkstra**. Los demás algoritmos (Flooding, Link State Routing y
-Distance Vector Routing) se integran sobre esta misma base — ver
-[Cómo agregar un algoritmo](#cómo-agregar-un-algoritmo).
+Cada algoritmo del enunciado es **un archivo** en `routing/`, y cada uno
+corresponde a un integrante del grupo:
+
+| # | Algoritmo | Archivo | Integrante | Estado |
+|---|---|---|---|---|
+| 1 | Dijkstra | `routing/dijkstra.py` | Carlos Estrada | Implementado y probado |
+| 2 | Flooding | `routing/flooding.py` | *(pendiente)* | Pendiente |
+| 3 | Link State Routing | `routing/lsr.py` | *(pendiente)* | Pendiente |
+| 4 | Distance Vector Routing | `routing/dvr.py` | *(pendiente)* | Pendiente |
+
+Los tres archivos pendientes ya existen y **traen dentro la guía de lo que hay
+que implementar**: qué métodos, qué formato de paquete, qué problemas clásicos
+cuidar y cómo probarlo. Ver [Cómo agregar un algoritmo](#cómo-agregar-un-algoritmo).
+
+Estado del resto del proyecto:
 
 | Componente | Estado |
 |---|---|
 | Protocolo JSON, forwarding, descubrimiento de vecinos | Implementado |
 | Transporte por sockets TCP (fase 1) | Implementado y probado |
 | Transporte XMPP (fase 2) | Implementado, **pendiente de probar** contra el servidor |
-| Dijkstra | Implementado y probado |
-| Flooding, LSR, DVR | Pendientes |
 
 ---
 
@@ -99,10 +108,15 @@ core/
   neighbors.py           descubrimiento de vecinos y costo de enlace vía HELLO/ECHO
   node.py                proceso de FORWARDING y unión entre transporte y routing
   console.py             consola interactiva del nodo
-routing/
-  base.py                interfaz común de los algoritmos (proceso de ROUTING)
-  dijkstra_core.py       algoritmo de Dijkstra puro, sin estado ni red
-  dijkstra.py            modo de red estático basado en Dijkstra
+routing/                 LOS ALGORITMOS: un archivo por algoritmo
+  dijkstra.py            algoritmo 1
+  flooding.py            algoritmo 2  (pendiente)
+  lsr.py                 algoritmo 3  (pendiente)
+  dvr.py                 algoritmo 4  (pendiente)
+  common/                infraestructura compartida, no son algoritmos
+    base.py                interfaz común que todos implementan
+    shortest_path.py       Dijkstra puro sobre un grafo (lo usan dijkstra y lsr)
+    seen_cache.py          deduplicación de paquetes (la usan flooding y lsr)
 transport/
   base.py                interfaz del medio
   sockets.py             transporte TCP (fase 1)
@@ -115,21 +129,32 @@ Cada nodo corre **forwarding y routing en paralelo**, como pide el enunciado:
 sobre un único bucle de `asyncio` conviven el servidor del transporte, el sondeo
 periódico de vecinos, las tareas del algoritmo y la consola interactiva.
 
-`dijkstra_core.py` está deliberadamente separado de `dijkstra.py`: el núcleo no
+`routing/` contiene exactamente los cuatro algoritmos del enunciado, uno por
+archivo. Todo lo que varios algoritmos comparten vive en `routing/common/`, para
+que quede claro de un vistazo qué es implementación y qué es andamio.
+
+`common/shortest_path.py` está deliberadamente separado de `dijkstra.py`: no
 sabe nada de red ni mantiene estado, recibe un grafo y devuelve distancias y
 primer salto. Eso permite que **Link State Routing lo reutilice tal cual** para
-calcular sus rutas sobre la topología que reconstruye a partir de los LSPs.
+calcular sus rutas sobre la topología que reconstruye a partir de los LSPs, tal
+como pide el enunciado. Lo mismo aplica a `common/seen_cache.py`, que comparten
+Flooding y la inundación de LSPs de LSR.
 
 ### Cómo agregar un algoritmo
 
-1. Crear el módulo en `routing/`, con una clase que herede de
-   `routing.base.RoutingAlgorithm` e implemente al menos `route()`.
-2. Registrarlo en el diccionario `ALGORITMOS` de `node.py`.
+1. Abrir el archivo del algoritmo en `routing/` (`flooding.py`, `lsr.py` o
+   `dvr.py`). Cada uno trae en su encabezado la guía completa: qué métodos
+   implementar, el formato sugerido del paquete, los problemas clásicos que hay
+   que cuidar y cómo probarlo.
+2. Implementar la clase, que ya hereda de `routing.common.base.RoutingAlgorithm`.
+3. Descomentar su import y su entrada en el diccionario `ALGORITMOS` de
+   `node.py` (las líneas ya están escritas).
+4. Probarlo: `python scripts/test_network.py --algo <nombre>`
 
 No hace falta tocar el nodo, el transporte ni el protocolo. Los ganchos
 disponibles son `start()`, `stop()`, `on_neighbor_change()`, `handle_info()`,
 `is_duplicate()`, `route()`, `table_rows()` y `describe()`; cada uno está
-documentado en `routing/base.py`.
+documentado en `routing/common/base.py`.
 
 ---
 

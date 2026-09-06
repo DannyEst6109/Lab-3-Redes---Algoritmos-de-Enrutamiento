@@ -13,8 +13,8 @@ invisible, y esa limitacion es precisamente lo que motivan LSR y DVR.
 """
 
 from core import packet as pk
-from routing.base import RoutingAlgorithm
-from routing.dijkstra_core import path_to, shortest_paths
+from routing.common.base import RoutingAlgorithm
+from routing.common.shortest_path import path_to, shortest_paths
 
 
 class Dijkstra(RoutingAlgorithm):

@@ -21,17 +21,22 @@ from core.node import Node
 from routing.dijkstra import Dijkstra
 from transport.sockets import SocketTransport
 
+# Al terminar un algoritmo, descomentar su import y su entrada en ALGORITMOS.
+# No hay que tocar nada mas: ni el nodo, ni el transporte, ni el protocolo.
+# from routing.flooding import Flooding
+# from routing.lsr import LinkStateRouting
+# from routing.dvr import DistanceVector
+
 #: Registro de algoritmos disponibles.
 #:
-#: Para agregar un algoritmo basta implementar `routing.base.RoutingAlgorithm`
-#: en su propio modulo dentro de `routing/` y registrarlo aqui; ni el nodo ni
-#: el transporte necesitan cambios.
-#:
-#:     "flooding": Flooding,
-#:     "lsr":      LinkStateRouting,
-#:     "dvr":      DistanceVector,
+#: Un algoritmo es una clase en `routing/` que hereda de
+#: `routing.common.base.RoutingAlgorithm`. Ver los archivos flooding.py,
+#: lsr.py y dvr.py, que traen la guia de lo que hay que implementar.
 ALGORITMOS = {
     "dijkstra": Dijkstra,
+    # "flooding": Flooding,
+    # "lsr": LinkStateRouting,
+    # "dvr": DistanceVector,
 }
 
 

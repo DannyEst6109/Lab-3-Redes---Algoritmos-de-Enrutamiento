@@ -15,7 +15,7 @@ import sys
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, RAIZ)
 
-from routing.dijkstra_core import path_to, shortest_paths  # noqa: E402
+from routing.common.shortest_path import path_to, shortest_paths  # noqa: E402
 
 # Topologia de configs/topo-weighted.txt
 PESADA = {
