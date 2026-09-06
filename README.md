@@ -7,6 +7,8 @@ conoce a sus vecinos y construye su tabla de enrutamiento intercambiando
 paquetes. El medio de transporte es intercambiable: **sockets TCP** para el
 desarrollo local (fase 1) y **XMPP** para la entrega oficial (fase 2).
 
+El reporte escrito de la practica esta en [`Reporte-Lab3.pdf`](Reporte-Lab3.pdf); se genera con `python docs/generar_reporte.py` (requiere `reportlab`).
+
 ## Los cuatro algoritmos
 
 Cada algoritmo del enunciado es **un archivo** en `routing/`, y cada uno
@@ -14,7 +16,7 @@ corresponde a un integrante del grupo:
 
 | # | Algoritmo | Archivo | Integrante | Estado |
 |---|---|---|---|---|
-| 1 | Dijkstra | `routing/dijkstra.py` | Carlos Estrada | Implementado y probado |
+| 1 | Dijkstra | `routing/dijkstra.py` | Daniel Estrada | Implementado y probado |
 | 2 | Flooding | `routing/flooding.py` | *(pendiente)* | Pendiente |
 | 3 | Link State Routing | `routing/lsr.py` | *(pendiente)* | Pendiente |
 | 4 | Distance Vector Routing | `routing/dvr.py` | *(pendiente)* | Pendiente |
