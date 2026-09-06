@@ -1,0 +1,3 @@
+# Fase 1 (sockets TCP): solo se necesita la biblioteca estandar de Python 3.9+
+# Fase 2 (XMPP):
+slixmpp>=1.8.5
