@@ -73,23 +73,69 @@ COMO PROBARLO
 
 from core import packet as pk
 from routing.common.base import RoutingAlgorithm
-from routing.common.seen_cache import SeenCache  # noqa: F401  (guia de uso)
-
-
+from routing.common.seen_cache import SeenCache
+ 
+ 
 class Flooding(RoutingAlgorithm):
     proto = pk.PROTO_FLOODING
-
+ 
     def __init__(self, node):
         super().__init__(node)
-        # TODO: inicializar la cache de paquetes vistos y los contadores.
-
+        self.seen = SeenCache()
+        self.stats = {"originados": 0, "reenviados": 0, "duplicados": 0}
+ 
+    # --------------------------------------------------------------- forwarding
+ 
     def is_duplicate(self, pkt, via=None):
-        # TODO: leer la cabecera `mid` con pk.get_header(pkt, "mid") y decidir
-        #       si el paquete ya se proceso.
+        """Registra el `mid` del paquete y dice si ya se habia visto antes.
+ 
+        Si el paquete no trae `mid` (no deberia pasar en la practica, pero
+        por robustez ante nodos de otros grupos) no se puede deduplicar: se
+        deja pasar sin marcarlo como duplicado.
+        """
+        mid = pk.get_header(pkt, "mid")
+        if mid is None:
+            return False
+ 
+        es_nuevo = self.seen.check_and_add(mid)
+        if not es_nuevo:
+            self.stats["duplicados"] += 1
+            return True
         return False
-
+ 
     def route(self, pkt, via=None):
-        # TODO: devolver la lista de direcciones de vecinos a los que reenviar.
-        raise NotImplementedError(
-            "Flooding.route() todavia no esta implementado (routing/flooding.py)"
+        """Reenvia a todos los vecinos vivos, menos el de `via`.
+ 
+        Si el destino es un vecino directo vivo, se le entrega solo a el
+        (optimizacion local que no altera el protocolo).
+        """
+        if via is None:
+            self.stats["originados"] += 1
+        else:
+            self.stats["reenviados"] += 1
+ 
+        destino = pkt.get("to")
+        vivos = self.node.neighbors.alive_addresses()
+ 
+        if destino in vivos:
+            return [destino]
+ 
+        return [addr for addr in vivos if addr != via]
+ 
+    # -------------------------------------------------------------- inspeccion
+ 
+    def table_rows(self):
+        """Flooding no tiene tabla real: se muestra el vecindario activo."""
+        return [
+            (n.label, n.label, n.cost)
+            for n in self.node.neighbors.all()
+            if n.alive
+        ]
+ 
+    def describe(self):
+        return (
+            "flooding | vistos={} | originados={} reenviados={} duplicados_descartados={}"
+            .format(len(self.seen), self.stats["originados"],
+                    self.stats["reenviados"], self.stats["duplicados"])
         )
+ 

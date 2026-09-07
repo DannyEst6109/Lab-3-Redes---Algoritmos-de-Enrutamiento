@@ -23,9 +23,10 @@ from transport.sockets import SocketTransport
 
 # Al terminar un algoritmo, descomentar su import y su entrada en ALGORITMOS.
 # No hay que tocar nada mas: ni el nodo, ni el transporte, ni el protocolo.
-# from routing.flooding import Flooding
+
 # from routing.lsr import LinkStateRouting
 from routing.dvr import DistanceVector
+from routing.flooding import Flooding
 
 #: Registro de algoritmos disponibles.
 #:
@@ -34,7 +35,7 @@ from routing.dvr import DistanceVector
 #: lsr.py y dvr.py, que traen la guia de lo que hay que implementar.
 ALGORITMOS = {
     "dijkstra": Dijkstra,
-    # "flooding": Flooding,
+    "flooding": Flooding,
     # "lsr": LinkStateRouting,
     "dvr": DistanceVector,
 }
